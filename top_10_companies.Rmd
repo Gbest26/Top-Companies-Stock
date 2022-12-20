@@ -1,0 +1,150 @@
+---
+title: "Freby corperation"
+author: "George.B"
+date: "2022-12-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+library(skimr)
+library(lubridate)
+library(tidyr)
+library(ggplot2)
+library(colorspace)
+library(here)
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(readr)
+Companies_Stock_History <- read_csv("C:/Users/pc/Desktop/my project raw file/Stock-History/Companies_Stock_History.csv")
+View(Companies_Stock_History)
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+Companies_Stock_History$date <- mdy(Companies_Stock_History$Date)
+Companies_Stock_History$Month <- format(as.Date(Companies_Stock_History$date), "%m")
+Companies_Stock_History$Day <- format(as.Date(Companies_Stock_History$date), "%d")
+Companies_Stock_History$Year <- format(as.Date(Companies_Stock_History$date), "%Y")
+```
+
+
+# Summary
+#### Project Problem.
+* Which of the top 10 US companies has the Highest unit of share traded in th pass five years.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+Companies_yearly_stock <- Companies_Stock_History %>% 
+  group_by(Year, Company) %>% 
+  drop_na() %>% 
+  summarise(max_Open=max(Open),max_High=max(High),max_Low=max(Low),max_Close=max(Close),max_Volume=max(Volume))
+print(Companies_yearly_stock)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = Companies_yearly_stock)+
+  geom_col(mapping = aes(x=Company, y=max_Volume, fill=Company))+
+  theme(axis.text.x = element_text(angle = 45))+
+  theme(axis.text.y = element_text(angle = 40))+
+  facet_wrap(~Year)+
+  labs(title = "Maximum: Yearly Volume", 
+       subtitle = "Highest Unit of Shares Traded on a Yearly Bases")
+```
+
+* The chart showcases the highest amount of volume traded the a single day in a year.
+* Apple, Amazon and Nvidia has the highest amount of unit of share traded in the stock market. 
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = Companies_yearly_stock)+
+  geom_col(mapping = aes(x=Company, y=max_Open, fill=Company))+
+  theme(axis.text.x = element_text(angle = 45))+
+  theme(axis.text.y = element_text(angle = 40))+
+  facet_wrap(~Year)+
+  labs(title = "Maximum: Open trades", 
+       subtitle = "Highest Unit of Shares Traded on a Yearly Bases")
+```
+
+* The chart showcases the highest amount of Open trades the a single day in a year.
+* Netflix and Tesla has the highest amount of Open trades in the stock market.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = Companies_yearly_stock)+
+  geom_col(mapping = aes(x=Company, y=max_High, fill=Company))+
+  theme(axis.text.x = element_text(angle = 45))+
+  theme(axis.text.y = element_text(angle = 40))+
+  facet_wrap(~Year)+
+  labs(title = "Maximum: High trades", 
+       subtitle = "Highest Unit of Shares Traded on a Yearly Bases")
+```
+
+* The chart shows the amount of high trades a single unit of share cost in the market the a single day in a year.
+* Netflix and Tesla still has the highest amount of high trades in the stock market.
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = Companies_yearly_stock)+
+  geom_col(mapping = aes(x=Company, y=max_Close, fill=Company))+
+  theme(axis.text.x = element_text(angle = 45))+
+  theme(axis.text.y = element_text(angle = 40))+
+  facet_wrap(~Year)+
+  labs(title = "Maximum: Close trades", 
+       subtitle = "Highest Unit of Shares Traded on a Yearly Bases")
+```
+
+* The chart showcases the highest amount of Close trades a single unit of share was sold at, at the end of the working day in a year.
+* Netflix and Tesla has the highest amount of Close trades in the stock market.
+
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(readr)
+company_yearly_trades <- read_csv("company_yearly_trades.csv")
+View(company_yearly_trades)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+company_yearly_trades2 <- company_yearly_trades %>% 
+  group_by(Company,total_volume_traded_yearly) %>% 
+  summarise(total_volume_traded_yearly=max(total_volume_traded_yearly))
+print(company_yearly_trades2)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = company_yearly_trades2)+
+  geom_col(mapping=aes(x=Company, y=total_volume_traded_yearly),color="red")+
+  labs(title = "Total Volume", subtitle = "Total Units of Shares Traded from 2017 to 2022")
+```
+
+* The chart shows the total amount of Volume traded from 2017 to 2022 the the companies.
+* Apple has the highest amount of unit of share traded in the market with an estimate of $150 billion shares traded in the 6 years, then followed by Amazon with an estimated share of over $109 billion shares traded from 2017  to 2022.
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+company_yearly_trades3 <- company_yearly_trades %>% 
+  group_by(Company,total_volume_traded_yearly_dollar) %>% 
+  summarise(total_volume_traded_yearly_dollar=max(total_volume_traded_yearly_dollar))
+print(company_yearly_trades3)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = company_yearly_trades3)+
+  geom_col(mapping = aes(x=Company, y=total_volume_traded_yearly_dollar), color="green")+
+  labs(title = "Volume in Dollars", subtitle = "Total Units of Shares Traded from 2017 to 2022")
+```
+
+* The chart shows the total amount of Volume traded in Dollars from 2017 to 2022 the the companies.
+* Tesla, Apple and Amazon has the highest amount of volume traded in Dollars which is as follows:-
+* Tesla $15,400,000,000,000 from 2017 to 2022
+* Apple $12,400,000,000,000 from 2017 to 2022
+* Amazon $12,200,000,000,000 from 2017 to 2022.
+* The amount in Dollar was gotten by multiplying Volume with Adj Close.
